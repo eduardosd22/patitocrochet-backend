@@ -65,9 +65,9 @@ const createOrder = async (req, res) => {
             await update.product.save();
         }
 
-        // 3. Notificar al cliente y al admin
-        await sendOrderEmail(clientData.email, clientData.name, orderCode, 'pending', items, totalAmount);
-        await sendAdminNotificationEmail(orderCode, items, totalAmount, clientData);
+        // 3. Notificar al cliente y al admin en segundo plano (sin 'await' para evitar bloqueos si el correo tarda 10 min en fallar)
+        sendOrderEmail(clientData.email, clientData.name, orderCode, 'pending', items, totalAmount).catch(console.error);
+        sendAdminNotificationEmail(orderCode, items, totalAmount, clientData).catch(console.error);
 
         res.status(201).json({
             message: 'Pedido creado con éxito',
@@ -122,15 +122,15 @@ const updateOrderStatus = async (req, res) => {
         order.status = status;
         await order.save();
 
-        // Notificar al cliente
-        await sendOrderEmail(
+        // Notificar al cliente en segundo plano
+        sendOrderEmail(
             order.clientData.email,
             order.clientData.name,
             order.orderCode,
             status,
             order.items,
             order.totalAmount
-        );
+        ).catch(console.error);
 
         res.status(200).json({ message: `Estado actualizado a: ${status}`, order });
     } catch (error) {
