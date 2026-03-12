@@ -75,7 +75,7 @@ const getAllProductsAdmin = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await Product.findByIdAndUpdate(id, req.body, { new: true });
+        const product = await Product.findByIdAndUpdate(id, req.body, { returnDocument: 'after' });
         if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
         res.status(200).json(product);
     } catch (error) {
@@ -87,7 +87,7 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const { id } = req.params;
-        const product = await Product.findByIdAndUpdate(id, { isActive: false }, { new: true });
+        const product = await Product.findByIdAndUpdate(id, { isActive: false }, { returnDocument: 'after' });
         if (!product) return res.status(404).json({ error: 'Producto no encontrado' });
         res.status(200).json({ message: 'Producto desactivado (Soft Delete) correctamente', product });
     } catch (error) {
