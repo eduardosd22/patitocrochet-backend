@@ -1,4 +1,8 @@
 const nodemailer = require('nodemailer');
+const dns = require('dns');
+
+// Forzar el uso de IPv4. Render gratuito a veces intenta usar IPv6 de salida hacia Google y falla con "ENETUNREACH".
+dns.setDefaultResultOrder('ipv4first');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
