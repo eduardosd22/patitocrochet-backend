@@ -64,7 +64,7 @@ const getProductById = async (req, res) => {
 // Obtener TODOS los productos incluyendo inactivos (Solo Admin)
 const getAllProductsAdmin = async (req, res) => {
     try {
-        const products = await Product.find({});
+        const products = await Product.find({ isActive: true }).sort({ createdAt: -1 });
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ error: 'Error al obtener productos para admin' });
