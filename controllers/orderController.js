@@ -122,15 +122,17 @@ const updateOrderStatus = async (req, res) => {
         order.status = status;
         await order.save();
 
-        // Notificar al cliente en segundo plano
-        sendOrderEmail(
-            order.clientData.email,
-            order.clientData.name,
-            order.orderCode,
-            status,
-            order.items,
-            order.totalAmount
-        ).catch(console.error);
+        // Notificar al cliente en segundo plano (protegido contra orders antiguos sin clientData)
+        if (order.clientData && order.clientData.email) {
+            sendOrderEmail(
+                order.clientData.email,
+                order.clientData.name || 'Cliente',
+                order.orderCode,
+                status,
+                order.items,
+                order.totalAmount
+            ).catch(console.error);
+        }
 
         res.status(200).json({ message: `Estado actualizado a: ${status}`, order });
     } catch (error) {
