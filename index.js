@@ -1,4 +1,6 @@
 require('dotenv').config();
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first'); // Fix global para Render Nodemailer ENETUNREACH
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -18,6 +20,9 @@ const uploadRoutes  = require('./routes/uploadRoutes');
 connectDB();
 
 const app = express();
+
+// Confía en el proxy de Render para que express-rate-limit pueda leer las IPs correctamente
+app.set('trust proxy', 1);
 
 // Middlewares basicos
 app.use(cors());
