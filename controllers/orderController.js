@@ -23,8 +23,8 @@ const createOrder = async (req, res) => {
 
         if (!items || !items.length)
             return res.status(400).json({ error: 'El carrito está vacío.' });
-        if (!clientData?.name || !clientData?.email || !clientData?.phone)
-            return res.status(400).json({ error: 'Nombre, email y teléfono son obligatorios.' });
+        if (!clientData?.name || !clientData?.email)
+            return res.status(400).json({ error: 'Nombre y email son obligatorios.' });
 
         const orderCode = await generateOrderCode(items[0]?.category || 'PE');
 
@@ -66,8 +66,9 @@ const createOrder = async (req, res) => {
         }
 
         // 3. Notificar al cliente y al admin en segundo plano (sin 'await' para evitar bloqueos si el correo tarda 10 min en fallar)
-        sendOrderEmail(clientData.email, clientData.name, orderCode, 'pending', items, totalAmount).catch(console.error);
-        sendAdminNotificationEmail(orderCode, items, totalAmount, clientData).catch(console.error);
+        // Eliminado/Comentado temporalmente por política de enviar WhatsApp
+        // sendOrderEmail(clientData.email, clientData.name, orderCode, 'pending', items, totalAmount).catch(console.error);
+        // sendAdminNotificationEmail(orderCode, items, totalAmount, clientData).catch(console.error);
 
         res.status(201).json({
             message: 'Pedido creado con éxito',
@@ -124,6 +125,8 @@ const updateOrderStatus = async (req, res) => {
 
         // Notificar al cliente en segundo plano (protegido contra orders antiguos sin clientData)
         if (order.clientData && order.clientData.email) {
+            // Eliminado/Comentado temporalmente por política de enviar WhatsApp
+            /*
             sendOrderEmail(
                 order.clientData.email,
                 order.clientData.name || 'Cliente',
@@ -132,6 +135,7 @@ const updateOrderStatus = async (req, res) => {
                 order.items,
                 order.totalAmount
             ).catch(console.error);
+            */
         }
 
         res.status(200).json({ message: `Estado actualizado a: ${status}`, order });
